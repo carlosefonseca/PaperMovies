@@ -1,9 +1,27 @@
 <?
-if(!isset($_GET["q"])) {
+function searchCache($t) {
+	$p = "gerados/".strtr($_GET['q'],array(" "=>"-")).".pdf";
+	if (file_exists($p)) {
+		// We'll be outputting a PDF
+		header('Content-type: application/pdf');
+		
+		// It will be called downloaded.pdf
+		header('Content-Disposition: attachment; filename="'.$t.'.pdf"');
+		
+		// The PDF source is in original.pdf
+		readfile($p);
+		die();
+	}
+}
+
+
+if(!isset($_GET["q"]) || $_GET["q"]=="") {
 	showForm();
 } else {
 	
 ini_set('display_errors', 0);
+
+searchCache($_GET['q']);
 
 $url = "http://www.google.pt/search?hl=pt-PT&source=hp&q=imdb+".strtr($_GET['q'],array(" "=>"+"))."&aq=f&aqi=g3&aql=&oq=&gs_rfai=&btnI=1";
 //$url = "http://www.imdb.com/title/tt0421715/";
@@ -53,8 +71,7 @@ $items = $xml->query("//h1");
 
 
 $title = trim($items->item(0)->firstChild->nodeValue);		// title
-$fn = normaliza($title).".jpg";
-$dfn ="images/".$fn;
+searchCache($title);
 
 
 $items = $xml->query("//div[attribute::class='starbar-meta']/b");
@@ -74,7 +91,11 @@ function strip2sapo($t) {
 }
 
 if (isset($_GET["sapo"]) && $_GET["sapo"]!="") {
-	$url = "http://cinema.sapo.pt/ajax-get-movie.php?movieSlug=".strip2sapo($_GET["sapo"]);
+	$us = $_GET["sapo"];
+	if (strpos($us, "cinema.sapo.pt")>=0) {
+		$us = substr($us, strrpos($us, "/")+1);
+	}
+	$url = "http://cinema.sapo.pt/ajax-get-movie.php?movieSlug=".strip2sapo($us);
 } else {
 	$url = "http://cinema.sapo.pt/ajax-get-movie.php?movieSlug=".strip2sapo($title);
 }
@@ -139,7 +160,7 @@ fclose($fp);
 
 
 require("generatepdf.php");
-
+searchCache($title);
 }
 }
 
@@ -154,20 +175,28 @@ function normaliza ($string){
     return utf8_encode($string);
 } 
 
-function showForm($title = null) {
-	echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
+function showForm($title = null) { ?>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h1>PaperMovies</h1>
+<?
 	if ($title!="") {
-		echo "<p>A procura no Sapo falhou com o titulo (IMDB) <b>$title</b>. <a href='http://cinema.sapo.pt/pesquisa/?terms=".urlencode($title)."' target='_blank'>Procure o filme em cinema.sapo.pt</a> e coloque o URL no campo Sapo ID em baixo.</p>";
+		echo "<p>A procura no Sapo falhou com o titulo (IMDB) <b>$title</b>. <a href='http://cinema.sapo.pt/pesquisa/?terms=".urlencode($title)."' target='_blank'>Procure o filme em cinema.sapo.pt</a> e coloque o URL no campo Sapo URL em baixo.</p>";
 	} else { ?>
-		<p><b>Gerador de PDFs com informações sobre filmes.</b> Exemplo: <a href="The-Shawshank-Redemption.pdf">The Shawshank Redemption</a></p>
+		<p><b>Gerador de PDFs com informações sobre filmes.</b><br>Lista de filmes já <a href="gerados">gerados</a>.</p>
+		<p>Coloque o título original (ou em inglês) do filme. </p>
 <?	}
 ?>
 	<form action="index.php" method="get">
-	<label for="ot">Titulo Original: </label><input id="ot" name="q" size="30" value="<? echo $title==""?$title:"" ?>"/><br>
-	<label for="sapo">Sapo ID<? echo $title==""?" (opcional):":":"; ?> </label><input id="sapo" name="sapo" size="30"/><br>
+	<label for="ot">Titulo Original: </label><input id="ot" name="q" size="30" value="<? echo $title!=""?$title:"" ?>"/><br>
+	<label for="sapo">Sapo ID/URL<? echo $title==""?" (opcional):":":"; ?> </label><input id="sapo" name="sapo" size="30"/><br>
 	<input type="submit" value="Gerar"/>
 	</form>
 	
+	
+	<p><br>&nbsp;</p>
+	<hr>
+	<p style="font-size:smaller"><a href="README.html">Acerca do PaperMovies</a> &mdash Autor: <a href="http://www.google.com/profiles/carlosefonseca">Carlos Fonseca</a> &mdash; Código no <a href="http://github.com/carlosefonseca/PaperMovies">GitHub</a>
+	</p>
 <script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-6001242-4']);
