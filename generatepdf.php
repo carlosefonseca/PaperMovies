@@ -59,24 +59,27 @@ while ($pdf->GetStringWidth($fotter) > 110) {
 }
 $pdf->Cell(110,7,$fotter,"T",0,"C");
 
-$pdf->Output($title.".pdf","I");
+$pdf->Output("gerados/".strtr($title,array(" "=>"-")).".pdf","F");
+
+
+
 
 
 function quotes($txt) {
-//Quotes: Replace smart double quotes with straight double quotes.
-//ANSI version for use with 8-bit regex engines and the Windows code page 1252.
-$txt = preg_replace('[\x84\x93\x94]', '"', $text);
-
-//Quotes: Replace smart double quotes with straight double quotes.
-//Unicode version for use with Unicode regex engines.
-$txt = preg_replace('[\u201C\u201D\u201E\u201F\u2033\u2036]', '"', $text);
-
-//Quotes: Replace smart single quotes and apostrophes with straight single quotes.
-//Unicode version for use with Unicode regex engines.
-$txt = preg_replace("[\u2018\u2019\u201A\u201B\u2032\u2035]", "'", $text);
-
-//Quotes: Replace smart single quotes and apostrophes with straight single quotes.
-//ANSI version for use with 8-bit regex engines and the Windows code page 1252.
-$txt = preg_replace("[\x82\x91\x92]", "'", $text);
-return $txt;
+	//Quotes: Replace smart double quotes with straight double quotes.
+	//ANSI version for use with 8-bit regex engines and the Windows code page 1252.
+	$txt = preg_replace('[\x84\x93\x94]', '"', $text);
+	
+	//Quotes: Replace smart double quotes with straight double quotes.
+	//Unicode version for use with Unicode regex engines.
+	$txt = preg_replace('[\u201C\u201D\u201E\u201F\u2033\u2036]', '"', $text);
+	
+	//Quotes: Replace smart single quotes and apostrophes with straight single quotes.
+	//Unicode version for use with Unicode regex engines.
+	$txt = preg_replace("[\u2018\u2019\u201A\u201B\u2032\u2035]", "'", $text);
+	
+	//Quotes: Replace smart single quotes and apostrophes with straight single quotes.
+	//ANSI version for use with 8-bit regex engines and the Windows code page 1252.
+	$txt = preg_replace("[\x82\x91\x92]", "'", $text);
+	return $txt;
 }
