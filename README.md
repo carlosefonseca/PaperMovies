@@ -29,3 +29,11 @@ Código @ [GitHub](http://github.com/carlosefonseca/PaperMovies)
 
 
 Demo: [carlosefonseca.com/papermovies](http://carlosefonseca.com/papermovies)
+
+
+Thanks:
+-------
+
+*Ao Sapo pela API Sapo Cinema - http://cinema.sapo.pt    
+*To FPDF's author - http://www.fpdf.org
+*To IMDB for existing and for making people scrape their site...
